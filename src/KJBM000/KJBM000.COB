@@ -25,7 +25,7 @@
        01  MSG.
          03  GREETING PIC X(12) VALUE 'こんにちは,'.
          03  YOURNAME PIC X(20) VALUE SPACE.
-         03  MYNAME PIC X(20) VALUE 'みさき'.
+         03  MYNAME PIC X(20) VALUE 'a'.
 
       * 実際のプログラムの開始地点
        PROCEDURE DIVISION.
@@ -45,15 +45,14 @@
            EXIT.
 
        MYNAME-SAMENAME SECTION.
-       iF MYNAME = YOURNAME THEN
-           DISPLAY "あなたの名前と私の名前は同じね"
-           DISPLAY "間違わない様に呼び方に違いを付けましょう"
-           MOVE SPACE TO YOURNAME
-           PERFORM INPUT-YOURNAME UNTIL YOURNAME NOT = SPACE
-           PERFORM DISPMEG
-       ELSE
-           GO TO EXIT
-       END-IF.
+           iF MYNAME = YOURNAME THEN
+               DISPLAY "あなたの名前と私の名前は同じね"
+               DISPLAY "間違わない様に呼び方に違いを付けましょう"
+               MOVE SPACE TO YOURNAME
+               PERFORM INPUT-YOURNAME UNTIL YOURNAME NOT = SPACE
+               PERFORM DISPMEG
+           END-IF.
+           EXIT.
 
        OUTPUT-FILE SECTION.
            MOVE MSG TO OTF-MSG.
