@@ -19,17 +19,19 @@
        DATA DIVISION.
        FILE SECTION.
        FD OTF-FILE.
-       01  OTF-MSG     PIC X(100).
+       01  OTF-MSG PIC X(100).
 
        WORKING-STORAGE SECTION.
        01  MSG.
          03  GREETING PIC X(12) VALUE 'こんにちは,'.
          03  YOURNAME PIC X(20) VALUE SPACE.
+         03  MYNAME PIC X(20) VALUE 'みさき'.
 
       * 実際のプログラムの開始地点
        PROCEDURE DIVISION.
            PERFORM INPUT-YOURNAME UNTIL YOURNAME NOT = SPACE.
            PERFORM DISPMEG.
+           PERFORM MYNAME-SAMENAME UNTIL MYNAME NOT = YOURNAME.
            PERFORM OUTPUT-FILE.
            STOP RUN.
 
@@ -42,11 +44,20 @@
            DISPLAY MSG.
            EXIT.
 
+       MYNAME-SAMENAME SECTION.
+       iF MYNAME = YOURNAME THEN
+           DISPLAY "あなたの名前と私の名前は同じね"
+           DISPLAY "間違わない様に呼び方に違いを付けましょう"
+           MOVE SPACE TO YOURNAME
+           PERFORM INPUT-YOURNAME UNTIL YOURNAME NOT = SPACE
+           PERFORM DISPMEG
+       ELSE
+           GO TO EXIT
+       END-IF.
+
        OUTPUT-FILE SECTION.
            MOVE MSG TO OTF-MSG.
-
            OPEN OUTPUT OTF-FILE.
            WRITE OTF-MSG.
            CLOSE OTF-FILE.
            EXIT.
-      
