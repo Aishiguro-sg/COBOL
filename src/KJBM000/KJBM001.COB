@@ -25,7 +25,6 @@
        WORKING-STORAGE SECTION.
        01  HENSU.
          03  WRK-I PIC 999 VALUE ZERO.
-         03  WRK-WRITE PIC X(6) VALUE SPACE.
 
       * 実際のプログラ�?の開始地点
        PROCEDURE DIVISION.
@@ -34,25 +33,23 @@
 
        OUTPUT-TEXT SECTION.
            IF FUNCTION REM(WRK-I, 3) = 0 AND FUNCTION REM(WRK-I, 5) = 0 THEN
-      *        DISPLAY "FooBar"
-               MOVE "FooBar" TO WRK-WRITE
+      *         DISPLAY "FooBar"
+               MOVE "FooBar" TO OTF-HENSU
            ELSE IF FUNCTION REM(WRK-I, 5) = 0 THEN
       *         DISPLAY "Bar"
-               MOVE "Bar" TO WRK-WRITE
+               MOVE "Bar" TO OTF-HENSU
            ELSE IF FUNCTION REM(WRK-I, 3) = 0 THEN
       *         DISPLAY "Foo"
-               MOVE "Foo" TO WRK-WRITE
+               MOVE "Foo" TO OTF-HENSU
            ELSE
       *         DISPLAY WRK-I
-               MOVE WRK-I TO WRK-WRITE
+               MOVE WRK-I TO OTF-HENSU
            END-IF.
            ADD 1 TO WRK-I.
-      *    DISPLAY WRK-WRITE.
            PERFORM EXTEND-FILE.
            EXIT.
 
        EXTEND-FILE SECTION.
-           MOVE WRK-WRITE TO OTF-HENSU.
            OPEN EXTEND OTF-FILE.
            WRITE OTF-HENSU.
            CLOSE OTF-FILE.
