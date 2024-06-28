@@ -13,40 +13,47 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT OTF-FILE ASSIGN TO EXTERNAL OTF.
+           SELECT OTF-FILE ASSIGN TO EXTERNAL OTF
+                           ORGANIZATION IS LINE SEQUENTIAL.
 
       * ファイルのレコード�?��?ータ�?目�?、一時的に利用する�?ータ�?目を定義
        DATA DIVISION.
        FILE SECTION.
        FD OTF-FILE.
-       01  OTF-HENSU PIC X(100).
+       01  OTF-HENSU PIC X(6).
 
        WORKING-STORAGE SECTION.
        01  HENSU.
          03  WRK-I PIC 999 VALUE ZERO.
+         03  WRK-WRITE PIC X(6) VALUE SPACE.
 
       * 実際のプログラ�?の開始地点
        PROCEDURE DIVISION.
            PERFORM OUTPUT-TEXT UNTIL WRK-I > 100.
-           PERFORM OUTPUT-FILE
            STOP RUN.
 
        OUTPUT-TEXT SECTION.
            IF FUNCTION REM(WRK-I, 3) = 0 AND FUNCTION REM(WRK-I, 5) = 0 THEN
-               DISPLAY "FooBar"
+      *        DISPLAY "FooBar"
+               MOVE "FooBar" TO WRK-WRITE
            ELSE IF FUNCTION REM(WRK-I, 5) = 0 THEN
-               DISPLAY "Bar"
+      *         DISPLAY "Bar"
+               MOVE "Bar" TO WRK-WRITE
            ELSE IF FUNCTION REM(WRK-I, 3) = 0 THEN
-               DISPLAY "Foo"
+      *         DISPLAY "Foo"
+               MOVE "Foo" TO WRK-WRITE
            ELSE
-               DISPLAY WRK-I
+      *         DISPLAY WRK-I
+               MOVE WRK-I TO WRK-WRITE
            END-IF.
            ADD 1 TO WRK-I.
+      *    DISPLAY WRK-WRITE.
+           PERFORM EXTEND-FILE.
            EXIT.
 
-       OUTPUT-FILE SECTION.
-           MOVE HENSU TO OTF-HENSU.
-           OPEN OUTPUT OTF-FILE.
+       EXTEND-FILE SECTION.
+           MOVE WRK-WRITE TO OTF-HENSU.
+           OPEN EXTEND OTF-FILE.
            WRITE OTF-HENSU.
            CLOSE OTF-FILE.
            EXIT.
