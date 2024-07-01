@@ -30,5 +30,10 @@
 
            MOVE "ABCDE" TO ABC.
            DISPLAY ABC.
+           MOVE "cde" TO BBB OF A(1).
+           MOVE "cat" TO BBB OF A(2).
+           DISPLAY ABC.
+           DISPLAY BBB OF A(1).
+           DISPLAY BBB OF A(2).
            STOP RUN.
 

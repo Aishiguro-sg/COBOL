@@ -29,6 +29,7 @@
       * 実際のプログラムの開始地点
        PROCEDURE DIVISION.
            PERFORM OUTPUT-TEXT UNTIL WRK-I > 100.
+      *    CLOSE OTF-FILE.
            STOP RUN.
 
        OUTPUT-TEXT SECTION.
