@@ -35,21 +35,21 @@
       ********************************************************
        PROCEDURE DIVISION.
            DISPLAY "*** START ***".
-           PERFORM INITIAL-REN.
+           PERFORM INITIAL-RTN.
       *編集処理　*受注チェック　ITF-END-FLG が "E"になるまで繰り返す
-           PERFORM INPUT-REN UNTIL ITF-END-FLG = "E".
-           PERFORM END-REN.
+           PERFORM INPUT-RTN UNTIL ITF-END-FLG = "E".
+           PERFORM END-RTN.
            DISPLAY "*** END ***".
            STOP RUN.
       *------------------------------------------------------ 
       *初期処理　サブルーチン
-       INITIAL-REN SECTION.
+       INITIAL-RTN SECTION.
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
            EXIT.
 
       *終了処理　サブルーチン
-       END-REN SECTION.
+       END-RN SECTION.
       *入出力カウント
            DISPLAY "入力数 ITF= " ITF-CNT.
            DISPLAY "出力数 OTF= " OTF-CNT.
@@ -60,18 +60,18 @@
            
       *------------------------------------------------------
       *入力(+出力)　サブルーチン
-       INPUT-REN SECTION.
+       INPUT-RTN SECTION.
            READ ITF-FILE
                AT END
                    MOVE "E" TO ITF-END-FLG
                NOT AT END
                    ADD 1 TO ITF-CNT
-                   PERFORM OUTPUT-REN
+                   PERFORM OUTPUT-RTN
            END-READ.
            EXIT.
            
       *出力　サブルーチン
-       OUTPUT-REN SECTION.
+       OUTPUT-RTN SECTION.
            MOVE SPACE TO OTF-REC.
       *    MOVE ITF-REC TO OTF-REC.
            MOVE JF010-DATA-KBN TO JF020-DATA-KBN.
