@@ -49,7 +49,7 @@
            EXIT.
 
       *終了処理　サブルーチン
-       END-RN SECTION.
+       END-RTN SECTION.
       *入出力カウント
            DISPLAY "入力数 ITF= " ITF-CNT.
            DISPLAY "出力数 OTF= " OTF-CNT.
