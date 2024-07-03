@@ -12,7 +12,7 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
       *INPUT 入力行順ファイル
-           SELECT ITF-FILE ASSIGN TO '../../data/KJBM010I.txt'
+           SELECT ITF-FILE ASSIGN TO EXTERNAL ITF
                            ORGANIZATION IS LINE SEQUENTIAL.
       *OUTPUT 出力順ファイル
            SELECT OTF-FILE ASSIGN TO EXTERNAL OTF.
@@ -27,30 +27,39 @@
        FD OTF-FILE.
        01  OTF-REC.
            COPY KJCF020.
-
+      *変数定義　入出力カウント　入力停止の条件式用
        WORKING-STORAGE SECTION.
        01  ITF-CNT PIC 9 VALUE ZERO.
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
       ********************************************************
        PROCEDURE DIVISION.
-      *受注チェック　ITF-END-FLG = "E"になるまで繰り返す
-           DISPLAY "*** STATE ***".
-      *入力
+           DISPLAY "*** START ***".
+           PERFORM INITIAL-REN.
+      *編集処理　*受注チェック　ITF-END-FLG が "E"になるまで繰り返す
+           PERFORM INPUT-REN UNTIL ITF-END-FLG = "E".
+           PERFORM END-REN.
+           DISPLAY "*** END ***".
+           STOP RUN.
+      *------------------------------------------------------ 
+      *初期処理　サブルーチン
+       INITIAL-REN SECTION.
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
-           PERFORM INPUT-REN UNTIL ITF-END-FLG = "E".
+           EXIT.
+
+      *終了処理　サブルーチン
+       END-REN SECTION.
+      *入出力カウント
            DISPLAY "入力数 ITF= " ITF-CNT.
-      *出力
            DISPLAY "出力数 OTF= " OTF-CNT.
       *処理を停止
            CLOSE ITF-FILE.
            CLOSE OTF-FILE.
-
-           DISPLAY "*** END ***".
-           STOP RUN.
-
-      *入力　サブルーチン
+           EXIT.
+           
+      *------------------------------------------------------
+      *入力(+出力)　サブルーチン
        INPUT-REN SECTION.
            READ ITF-FILE
                AT END
@@ -60,19 +69,19 @@
                    PERFORM OUTPUT-REN
            END-READ.
            EXIT.
+           
       *出力　サブルーチン
        OUTPUT-REN SECTION.
            MOVE SPACE TO OTF-REC.
       *    MOVE ITF-REC TO OTF-REC.
-           MOVE JF010-DATA-KBN OF ITF-REC TO JF020-DATA-KBN OF OTF-REC.
-           MOVE JF010-JUCHU-NO-X OF ITF-REC TO JF020-JUCHU-NO OF OTF-REC.
-           MOVE JF010-JUCHU-YY OF ITF-REC TO JF020-JUCHU-Y2 OF OTF-REC.
-           MOVE JF010-JUCHU-MM OF ITF-REC TO JF020-JUCHU-MM OF OTF-REC.
-           MOVE JF010-JUCHU-DD OF ITF-REC TO JF020-JUCHU-DD OF OTF-REC.
-           MOVE JF010-TOKU-COD OF ITF-REC TO JF020-TOKU-COD OF OTF-REC.
-           MOVE JF010-SHOHIN-NO OF ITF-REC TO JF020-SHOHIN-NO OF OTF-REC.
-           MOVE JF010-SURYO OF ITF-REC TO JF020-SURYO OF OTF-REC.
-
+           MOVE JF010-DATA-KBN TO JF020-DATA-KBN.
+           MOVE JF010-JUCHU-NO-X TO JF020-JUCHU-NO.
+           MOVE JF010-JUCHU-YY TO JF020-JUCHU-Y2.
+           MOVE JF010-JUCHU-MM TO JF020-JUCHU-MM.
+           MOVE JF010-JUCHU-DD TO JF020-JUCHU-DD.
+           MOVE JF010-TOKU-COD TO JF020-TOKU-COD.
+           MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO.
+           MOVE JF010-SURYO TO JF020-SURYO.
            WRITE OTF-REC.
            ADD 1 TO OTF-CNT.
            EXIT.
