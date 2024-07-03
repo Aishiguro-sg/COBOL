@@ -82,6 +82,10 @@
            MOVE JF010-TOKU-COD TO JF020-TOKU-COD.
            MOVE JF010-SHOHIN-NO TO JF020-SHOHIN-NO.
            MOVE JF010-SURYO TO JF020-SURYO.
+      *’P‰¿
+           MOVE ZERO TO JF020-TANKA.
+      *‹àŠz
+           MOVE ZERO TO JF020-KINGAKU.
            WRITE OTF-REC.
            ADD 1 TO OTF-CNT.
            EXIT.
