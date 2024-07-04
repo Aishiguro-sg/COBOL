@@ -32,7 +32,12 @@
        01  ITF-CNT PIC 9 VALUE ZERO.
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
-       01  ERROR-CNT
+      *OCCURS 範囲1~10
+       01  ERROR-CNT PIC X VALUE SPACE.
+       01  ERROR-TBL OCCURS 1 TO 10 
+                  DEPENDING ON ERROR-CNT
+                  INDEXED BY TBL-IX.
+           05 I PIC X(1).
       ********************************************************
        PROCEDURE DIVISION.
            DISPLAY "*** START ***".
@@ -90,34 +95,70 @@
            ADD 1 TO OTF-CNT.
            EXIT.
       *------------------------------------------------------     
-      *データ区分
+      *データ区分 9
        JF020-DATA-KBN-RTN SECTION.
            IF JF020-DATA-KBN IS NUMERIC THEN
               CONTINUE
+      *エラー(1)に1を入れる
            ELSE
-      *エラー1桁目(xxx-IX) に1を入れる
               MOVE 1 TO ERROR-TBL(1)
            END-IF
            MOVE JF020-DATA-KBN TO JF020-DATA-KBN.
        EXIT.
-      *受注番号－Ｘ
+      *------------------------------------------------------
+      *受注番号 9 & x:ZERO
        JF020-JUCHU-NO-X-RTN SECTION.
+           IF JF020-JUCHU-NO-X IS NUMERIC AND JF020-JUCHU-NO-X = NOT 0 THEN
+              CONTINUE
+      *エラー(2)に1を入れる
+           ELSE
+              MOVE 1 TO ERROR-TBL(2)
+           END-IF
            MOVE JF020-JUCHU-NO-X TO JF020-JUCHU-NO-X.
        EXIT.
-      *受注日付
+      *------------------------------------------------------
+      *受注日付 9
        JF020-JUCHU-DATE-RTN SECTION.
            CALL 'KCBS010' USING KCBS010-P1.
-           MOVE JF020-JUCHU-DATE TO JJF020-JUCHU-DATE.
+           IF JF020-JUCHU-DATE IS NUMERIC THEN
+              CONTINUE
+      *エラー(3)に1を入れる
+           ELSE
+              MOVE 1 TO ERROR-TBL(3)
+           END-IF    
+           MOVE JF020-JUCHU-DATE TO JF020-JUCHU-DATE.
        EXIT.
-      *得意先コード
+      *------------------------------------------------------
+      *得意先コード 9 & x:SPACE
        JF020-TOKU-COD-RTN SECTION.
+           IF F020-TOKU-COD IS NUMERIC AND F020-TOKU-COD = SPACE THEN
+              CONTINUE
+      *エラー(4)に1を入れる
+           ELSE
+              MOVE 1 TO ERROR-TBL(4)
+           END-IF
            MOVE JF020-TOKU-COD TO JF020-TOKU-COD.
        EXIT.
-      *商品番号
+      *------------------------------------------------------
+      *商品番号 9 & x:ZERO
        JF020-SHOHIN-NO-RTN SECTION.
+           IF JF020-SHOHIN-NO IS NUMERIC AND JF020-SHOHIN-NO = NOT 0 THEN
+              CONTINUE
+      *エラー(5)に1を入れる
+           ELSE
+              MOVE 1 TO ERROR-TBL(5)
+           END-IF
            MOVE JF020-SHOHIN-NO TO JF020-SHOHIN-NO.
        EXIT.
-      *数量－Ｘ
+      *------------------------------------------------------
+      *数量 9 & 999
        JF020-SURYO-X-RTN SECTION.
+           IF JF020-SURYO-X IS NUMERIC AND JF020-SURYO-X <= 999 THEN
+              CONTINUE
+      *エラー(6)に1を入れる
+           ELSE
+              MOVE 1 TO ERROR-TBL(6)
+           END-IF
            MOVE JF020-SURYO-X TO JF020-SURYO-X.
        EXIT.
+       
