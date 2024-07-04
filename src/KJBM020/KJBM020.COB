@@ -103,7 +103,7 @@
            ELSE
               MOVE 1 TO ERROR-TBL(1)
            END-IF
-           MOVE JF020-DATA-KBN TO JF020-DATA-KBN.
+           MOVE JF020-DATA-KBN OF ITF-REC TO OTF-REC.
        EXIT.
       *------------------------------------------------------
       *受注番号 9 & x:ZERO
@@ -114,7 +114,7 @@
            ELSE
               MOVE 1 TO ERROR-TBL(2)
            END-IF
-           MOVE JF020-JUCHU-NO-X TO JF020-JUCHU-NO-X.
+           MOVE JF020-JUCHU-NO-X OF ITF-REC TO OTF-REC.
        EXIT.
       *------------------------------------------------------
       *受注日付 9
@@ -126,7 +126,7 @@
            ELSE
               MOVE 1 TO ERROR-TBL(3)
            END-IF    
-           MOVE JF020-JUCHU-DATE TO JF020-JUCHU-DATE.
+           MOVE JF020-JUCHU-DATE OF ITF-REC TO OTF-REC.
        EXIT.
       *------------------------------------------------------
       *得意先コード 9 & x:SPACE
@@ -137,7 +137,7 @@
            ELSE
               MOVE 1 TO ERROR-TBL(4)
            END-IF
-           MOVE JF020-TOKU-COD TO JF020-TOKU-COD.
+           MOVE JF020-TOKU-COD OF ITF-REC TO OTF-REC.
        EXIT.
       *------------------------------------------------------
       *商品番号 9 & x:ZERO
@@ -148,7 +148,7 @@
            ELSE
               MOVE 1 TO ERROR-TBL(5)
            END-IF
-           MOVE JF020-SHOHIN-NO TO JF020-SHOHIN-NO.
+           MOVE JF020-SHOHIN-NO OF ITF-REC TO OTF-REC.
        EXIT.
       *------------------------------------------------------
       *数量 9 & 999
@@ -159,6 +159,5 @@
            ELSE
               MOVE 1 TO ERROR-TBL(6)
            END-IF
-           MOVE JF020-SURYO-X TO JF020-SURYO-X.
+           MOVE JF020-SURYO-X OF ITF-REC TO OTF-REC.
        EXIT.
-       
