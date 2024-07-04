@@ -1,6 +1,6 @@
 #!/bin/bash
 # export ITF="../../data/KJBM010I.txt"
-export ITF="test.txt"
-export OTF="KJBM010Icheck.txt"
+export ITF="KJBM020I.txt"
+export OTF="KJBM020Icheck.txt"
 # 実行
 ./KJBM010
