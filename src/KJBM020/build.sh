@@ -8,8 +8,7 @@ DIRNAME=$(basename "${SCRIPTDIR}")
 
 SRCFILE_A="KJBM020.COB"
 SRCFILE_B="KCBS010.COB"
-cobc -m -v -o "KCBS010.SO" -I"${COPYLIBDIR}" "${SRCFILE_B}"
+cobc -m -o "KCBS010.so" -I"${COPYLIBDIR}" "${SRCFILE_B}"
 # -oつけてるときは.SO
 SRCFILENAME=$(basename -s .COB $SRCFILE_A)
-cobc -x -v -o "${SRCFILENAME}" -I"${COPYLIBDIR}" "${SRCFILE_A}"
-
+cobc -x -o "${SRCFILENAME}" -I"${COPYLIBDIR}" "${SRCFILE_A}"

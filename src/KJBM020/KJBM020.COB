@@ -37,7 +37,8 @@
                   DEPENDING ON ERROR-CNT
                   INDEXED BY TBL-IX.
            05 I PIC X(1).
-       01 COPY KCBS010P.
+       
+       COPY KCBS010P.
 
       ********************************************************
        PROCEDURE DIVISION.
