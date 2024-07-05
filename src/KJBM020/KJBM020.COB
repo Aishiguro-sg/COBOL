@@ -31,15 +31,7 @@
        01  ITF-CNT PIC 9 VALUE ZERO.
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
-      *OCCURS 範囲1~10
-      *01  ERROR-CNT PIC 9 VALUE ZERO.
-      *01  ERROR-TBL OCCURS 1 TO 10 
-      *           DEPENDING ON ERROR-CNT
-      *           INDEXED BY TBL-IX.
-      *    05 I PIC X(1).
-
        COPY KCBS010P.
-
       ********************************************************
        PROCEDURE DIVISION.
       *サブルーチン呼び出し
@@ -54,7 +46,7 @@
        INITIAL-RTN SECTION.
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
-       EXIT.
+           EXIT.
 
       *終了処理
        END-RTN SECTION.
@@ -62,7 +54,7 @@
            DISPLAY "出力数 OTF= " OTF-CNT.
            CLOSE ITF-FILE.
            CLOSE OTF-FILE.
-       EXIT.
+           EXIT.
       *------------------------------------------------------
       *入力(+出力)
        INPUT-RTN SECTION.
@@ -73,11 +65,13 @@
                    ADD 1 TO ITF-CNT
                    PERFORM OUTPUT-RTN
            END-READ.
-       EXIT.
-           
+           EXIT.
+         
       *出力   ITF-REC ? OTF-REC.
        OUTPUT-RTN SECTION.
            MOVE SPACE TO OTF-REC.
+      *残りの項目
+           MOVE ITF-REC TO OTF-REC. 
       *データ区分
            PERFORM JF020-DATA-KBN-RTN.
       *受注番号－Ｘ
@@ -90,8 +84,6 @@
            PERFORM JF020-SHOHIN-NO-RTN.
       *数量－Ｘ
            PERFORM JF020-SURYO-X-RTN.
-      *残りの項目
-           PERFORM EXCESS-RTN.
       *エラー項目の中身確認 
       *    DISPLAY JF020-ERR-KBN OF OTF-REC(6).
            WRITE OTF-REC.
@@ -105,8 +97,7 @@
            ELSE
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(1)
            END-IF
-           MOVE JF020-DATA-KBN OF ITF-REC TO JF020-DATA-KBN OF OTF-REC.
-       EXIT.
+           EXIT.
       *------------------------------------------------------
       *受注番号 9 & x:ZERO
        JF020-JUCHU-NO-X-RTN SECTION.
@@ -116,8 +107,7 @@
            ELSE
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(2)
            END-IF
-           MOVE JF020-JUCHU-NO OF ITF-REC TO JF020-JUCHU-NO OF OTF-REC.
-       EXIT.
+           EXIT.
       *------------------------------------------------------
       *受注日付 9
        JF020-JUCHU-DATE-RTN SECTION.
@@ -129,10 +119,7 @@
            IF S010-RCD = "E" THEN
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(3)
            END-IF
-           MOVE JF020-JUCHU-Y2 OF ITF-REC TO JF020-JUCHU-Y2 OF OTF-REC.
-           MOVE JF020-JUCHU-MM OF ITF-REC TO JF020-JUCHU-MM OF OTF-REC.
-           MOVE JF020-JUCHU-DD OF ITF-REC TO JF020-JUCHU-DD OF OTF-REC.
-       EXIT.
+           EXIT.
       *------------------------------------------------------
       *得意先コード 9 & x:SPACE
        JF020-TOKU-COD-RTN SECTION.
@@ -142,8 +129,7 @@
            ELSE
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(4)
            END-IF
-           MOVE JF020-TOKU-COD OF ITF-REC TO JF020-TOKU-COD OF OTF-REC.
-       EXIT.
+           EXIT.
       *------------------------------------------------------
       *商品番号 9 & x:ZERO
        JF020-SHOHIN-NO-RTN SECTION.
@@ -153,9 +139,6 @@
            ELSE
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(5)
            END-IF
-           MOVE JF020-SHOHIN-NO OF ITF-REC TO JF020-SHOHIN-NO OF OTF-REC.
-      *    DISPLAY JF020-SHOHIN-NO OF ITF-REC.
-      *    DISPLAY JF020-SHOHIN-NO OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *数量 9 & 999
@@ -166,32 +149,4 @@
            ELSE
               MOVE 1 TO JF020-ERR-KBN OF OTF-REC(6)
            END-IF
-           MOVE JF020-SURYO OF ITF-REC TO JF020-SURYO OF OTF-REC.
-      *    DISPLAY "ITF " JF020-SURYO OF ITF-REC.
-      *    DISPLAY "OTF " JF020-SURYO OF OTF-REC.
-      *    DISPLAY "---"
-       EXIT.
-       EXCESS-RTN SECTION.
-      *0▽
-           MOVE JF020-JUCHU-Y1 OF ITF-REC TO JF020-JUCHU-Y1 OF OTF-REC.
-      *スペース▽
-           MOVE JF020-TOKU-MEI OF ITF-REC TO JF020-TOKU-MEI OF OTF-REC.
-      *    DISPLAY "ITF " JF020-TOKU-MEI OF ITF-REC.
-      *    DISPLAY "OTF " JF020-TOKU-MEI OF OTF-REC.
-      *    DISPLAY "---"
-      *エラーになる▽
-      *    MOVE JF020-SHOHIN-MEI OF ITF-REC TO JF020-SHOHIN-MEI OF OTF-REC.
-      *    DISPLAY "ITF " JF020-SHOHIN-MEI OF ITF-REC.
-      *    DISPLAY "OTF " JF020-SHOHIN-MEI OF OTF-REC.
-      *    DISPLAY "---"
-      *0▽
-           MOVE JF020-TANKA OF ITF-REC TO JF020-TANKA OF OTF-REC.
-      *    DISPLAY "ITF " JF020-TANKA OF ITF-REC.
-      *    DISPLAY "OTF " JF020-TANKA OF OTF-REC.
-      *    DISPLAY "---"
-      *0▽
-           MOVE JF020-KINGAKU OF ITF-REC TO JF020-KINGAKU OF OTF-REC.
-      *    DISPLAY "ITF " JF020-KINGAKU OF ITF-REC.
-      *    DISPLAY "OTF " JF020-KINGAKU OF OTF-REC.
-      *    DISPLAY "---"
        EXIT.
