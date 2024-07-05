@@ -7,13 +7,12 @@
       * 作成日／作成者：２０２４年7月4日  石黒　茜
       * 変更日／変更者：
       *       変更内容：
-      ********************************************************       
+      ********************************************************
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-      *INPUT 入力行順ファイル
-           SELECT ITF-FILE ASSIGN TO EXTERNAL ITF
-                           ORGANIZATION IS LINE SEQUENTIAL.
+      *INPUT 入力順ファイル
+           SELECT ITF-FILE ASSIGN TO EXTERNAL ITF.
       *OUTPUT 出力順ファイル
            SELECT OTF-FILE ASSIGN TO EXTERNAL OTF.
       ********************************************************
@@ -22,7 +21,7 @@
       *入力項目、コピー区
        FD ITF-FILE.
        01  ITF-REC.
-           COPY KJCF010.
+           COPY KJCF020.
       *出力項目、空
        FD OTF-FILE.
        01  OTF-REC.
@@ -38,34 +37,33 @@
                   DEPENDING ON ERROR-CNT
                   INDEXED BY TBL-IX.
            05 I PIC X(1).
+       01 COPY KCBS010P.
+
       ********************************************************
        PROCEDURE DIVISION.
+      *サブルーチン呼び出し
            DISPLAY "*** START ***".
            PERFORM INITIAL-RTN.
-      *編集処理　*受注チェック　ITF-END-FLG が "E"になるまで繰り返す
            PERFORM INPUT-RTN UNTIL ITF-END-FLG = "E".
            PERFORM END-RTN.
            DISPLAY "*** END ***".
            STOP RUN.
       *------------------------------------------------------ 
-      *初期処理　サブルーチン
+      *初期処理
        INITIAL-RTN SECTION.
            OPEN INPUT ITF-FILE.
            OPEN OUTPUT OTF-FILE.
-           EXIT.
+       EXIT.
 
-      *終了処理　サブルーチン
+      *終了処理
        END-RTN SECTION.
-      *入出力カウント
            DISPLAY "入力数 ITF= " ITF-CNT.
            DISPLAY "出力数 OTF= " OTF-CNT.
-      *処理を停止
            CLOSE ITF-FILE.
            CLOSE OTF-FILE.
-           EXIT.
-           
+       EXIT.
       *------------------------------------------------------
-      *入力(+出力)　サブルーチン
+      *入力(+出力)
        INPUT-RTN SECTION.
            READ ITF-FILE
                AT END
@@ -74,90 +72,101 @@
                    ADD 1 TO ITF-CNT
                    PERFORM OUTPUT-RTN
            END-READ.
-           EXIT.
+       EXIT.
            
-      *出力　サブルーチン ITF-REC ? OTF-REC.
+      *出力   ITF-REC ? OTF-REC.
        OUTPUT-RTN SECTION.
            MOVE SPACE TO OTF-REC.
-      *データ区分     
+      *データ区分
            PERFORM JF020-DATA-KBN-RTN.
       *受注番号－Ｘ
            PERFORM JF020-JUCHU-NO-X-RTN.
-      *受注日付     
+      *受注日付
            PERFORM JF020-JUCHU-DATE-RTN.
-      *得意先コード     
+      *得意先コード
            PERFORM JF020-TOKU-COD-RTN.
-      *商品番号     
+      *商品番号
            PERFORM JF020-SHOHIN-NO-RTN.
-      *数量－Ｘ     
+      *数量－Ｘ
            PERFORM JF020-SURYO-X-RTN.
+      *残りの項目
+           PERFORM EXCESS-RTN.
            WRITE OTF-REC.
            ADD 1 TO OTF-CNT.
            EXIT.
-      *------------------------------------------------------     
+      *------------------------------------------------------
       *データ区分 9
        JF020-DATA-KBN-RTN SECTION.
-           IF JF020-DATA-KBN IS NUMERIC THEN
+           IF JF020-DATA-KBN OF ITF-REC IS NUMERIC THEN
               CONTINUE
-      *エラー(1)に1を入れる
            ELSE
               MOVE 1 TO ERROR-TBL(1)
            END-IF
-           MOVE JF020-DATA-KBN OF ITF-REC TO OTF-REC.
+           MOVE JF020-DATA-KBN OF ITF-REC TO JF020-DATA-KBN OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *受注番号 9 & x:ZERO
        JF020-JUCHU-NO-X-RTN SECTION.
-           IF JF020-JUCHU-NO-X IS NUMERIC AND JF020-JUCHU-NO-X = NOT 0 THEN
+           IF (JF020-JUCHU-NO OF ITF-REC IS NUMERIC) AND 
+              (JF020-JUCHU-NO OF ITF-REC NOT = 0) THEN
               CONTINUE
-      *エラー(2)に1を入れる
            ELSE
               MOVE 1 TO ERROR-TBL(2)
            END-IF
-           MOVE JF020-JUCHU-NO-X OF ITF-REC TO OTF-REC.
+           MOVE JF020-JUCHU-NO OF ITF-REC TO JF020-JUCHU-NO OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *受注日付 9
        JF020-JUCHU-DATE-RTN SECTION.
-           CALL 'KCBS010' USING KCBS010-P1.
-           IF JF020-JUCHU-DATE IS NUMERIC THEN
-              CONTINUE
-      *エラー(3)に1を入れる
-           ELSE
+           MOVE JF020-JUCHU-Y2 OF ITF-REC TO S010-D6-Y2.
+           MOVE JF020-JUCHU-MM OF ITF-REC TO S010-D6-MM.
+           MOVE JF020-JUCHU-DD OF ITF-REC TO S010-D6-DD.
+           CALL "KCBS010" USING KCBS010-P1.
+      *ここ確認
+           IF S010-RCD = "E" THEN
               MOVE 1 TO ERROR-TBL(3)
-           END-IF    
-           MOVE JF020-JUCHU-DATE OF ITF-REC TO OTF-REC.
+           END-IF
+           MOVE JF020-JUCHU-Y2 OF ITF-REC TO JF020-JUCHU-Y2 OF OTF-REC.
+           MOVE JF020-JUCHU-MM OF ITF-REC TO JF020-JUCHU-MM OF OTF-REC.
+           MOVE JF020-JUCHU-DD OF ITF-REC TO JF020-JUCHU-DD OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *得意先コード 9 & x:SPACE
        JF020-TOKU-COD-RTN SECTION.
-           IF F020-TOKU-COD IS NUMERIC AND F020-TOKU-COD = SPACE THEN
+           IF (JF020-TOKU-COD OF ITF-REC IS NUMERIC) AND
+              (JF020-TOKU-COD OF ITF-REC = SPACE) THEN
               CONTINUE
-      *エラー(4)に1を入れる
            ELSE
               MOVE 1 TO ERROR-TBL(4)
            END-IF
-           MOVE JF020-TOKU-COD OF ITF-REC TO OTF-REC.
+           MOVE JF020-TOKU-COD OF ITF-REC TO JF020-TOKU-COD OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *商品番号 9 & x:ZERO
        JF020-SHOHIN-NO-RTN SECTION.
-           IF JF020-SHOHIN-NO IS NUMERIC AND JF020-SHOHIN-NO = NOT 0 THEN
-              CONTINUE
-      *エラー(5)に1を入れる
+           IF (JF020-SHOHIN-NO OF ITF-REC IS NUMERIC) AND
+              (JF020-SHOHIN-NO OF ITF-REC NOT = 0) THEN
+              NEXT SENTENCE
            ELSE
               MOVE 1 TO ERROR-TBL(5)
            END-IF
-           MOVE JF020-SHOHIN-NO OF ITF-REC TO OTF-REC.
+           MOVE JF020-SHOHIN-NO OF ITF-REC TO JF020-SHOHIN-NO OF OTF-REC.
        EXIT.
       *------------------------------------------------------
       *数量 9 & 999
        JF020-SURYO-X-RTN SECTION.
-           IF JF020-SURYO-X IS NUMERIC AND JF020-SURYO-X <= 999 THEN
-              CONTINUE
-      *エラー(6)に1を入れる
+           IF (JF020-SURYO OF ITF-REC IS NUMERIC) AND
+              (JF020-SURYO OF ITF-REC <= 999) THEN
+              NEXT SENTENCE
            ELSE
               MOVE 1 TO ERROR-TBL(6)
            END-IF
-           MOVE JF020-SURYO-X OF ITF-REC TO OTF-REC.
+           MOVE JF020-SURYO OF ITF-REC TO JF020-SURYO OF OTF-REC.
+       EXIT.
+       EXCESS-RTN SECTION.
+           MOVE JF020-JUCHU-Y1 OF ITF-REC TO JF020-JUCHU-Y1 OF OTF-REC.
+           MOVE JF020-TOKU-MEI OF ITF-REC TO JF020-TOKU-MEI OF OTF-REC.
+      *    MOVE JF020-SHOHIN-MEI OF ITF-REC TO JF020-SHOHIN-MEI OF OTF-REC.
+           MOVE JF020-TANKA OF ITF-REC TO JF020-TANKA OF OTF-REC.
+           MOVE JF020-KINGAKU OF ITF-REC TO JF020-KINGAKU OF OTF-REC.
        EXIT.
