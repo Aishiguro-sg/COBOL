@@ -32,12 +32,12 @@
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
       *OCCURS 範囲1~10
-       01  ERROR-CNT PIC 9 VALUE ZERO.
-       01  ERROR-TBL OCCURS 1 TO 10 
-                  DEPENDING ON ERROR-CNT
-                  INDEXED BY TBL-IX.
-           05 I PIC X(1).
-       
+      *01  ERROR-CNT PIC 9 VALUE ZERO.
+      *01  ERROR-TBL OCCURS 1 TO 10 
+      *           DEPENDING ON ERROR-CNT
+      *           INDEXED BY TBL-IX.
+      *    05 I PIC X(1).
+
        COPY KCBS010P.
 
       ********************************************************
@@ -92,6 +92,8 @@
            PERFORM JF020-SURYO-X-RTN.
       *残りの項目
            PERFORM EXCESS-RTN.
+      *エラー項目の中身確認 
+      *    DISPLAY JF020-ERR-KBN OF OTF-REC().
            WRITE OTF-REC.
            ADD 1 TO OTF-CNT.
            EXIT.
@@ -101,7 +103,7 @@
            IF JF020-DATA-KBN OF ITF-REC IS NUMERIC THEN
               CONTINUE
            ELSE
-              MOVE 1 TO ERROR-TBL(1)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(1)
            END-IF
            MOVE JF020-DATA-KBN OF ITF-REC TO JF020-DATA-KBN OF OTF-REC.
        EXIT.
@@ -112,7 +114,7 @@
               (JF020-JUCHU-NO OF ITF-REC NOT = 0) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO ERROR-TBL(2)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(2)
            END-IF
            MOVE JF020-JUCHU-NO OF ITF-REC TO JF020-JUCHU-NO OF OTF-REC.
        EXIT.
@@ -125,7 +127,7 @@
            CALL "KCBS010" USING KCBS010-P1.
       *ここ確認
            IF S010-RCD = "E" THEN
-              MOVE 1 TO ERROR-TBL(3)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(3)
            END-IF
            MOVE JF020-JUCHU-Y2 OF ITF-REC TO JF020-JUCHU-Y2 OF OTF-REC.
            MOVE JF020-JUCHU-MM OF ITF-REC TO JF020-JUCHU-MM OF OTF-REC.
@@ -138,7 +140,7 @@
               (JF020-TOKU-COD OF ITF-REC = SPACE) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO ERROR-TBL(4)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(4)
            END-IF
            MOVE JF020-TOKU-COD OF ITF-REC TO JF020-TOKU-COD OF OTF-REC.
        EXIT.
@@ -149,7 +151,7 @@
               (JF020-SHOHIN-NO OF ITF-REC NOT = 0) THEN
               NEXT SENTENCE
            ELSE
-              MOVE 1 TO ERROR-TBL(5)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(5)
            END-IF
            MOVE JF020-SHOHIN-NO OF ITF-REC TO JF020-SHOHIN-NO OF OTF-REC.
        EXIT.
@@ -160,7 +162,7 @@
               (JF020-SURYO OF ITF-REC <= 999) THEN
               NEXT SENTENCE
            ELSE
-              MOVE 1 TO ERROR-TBL(6)
+              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(6)
            END-IF
            MOVE JF020-SURYO OF ITF-REC TO JF020-SURYO OF OTF-REC.
        EXIT.
