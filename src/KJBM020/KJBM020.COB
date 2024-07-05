@@ -93,7 +93,7 @@
       *残りの項目
            PERFORM EXCESS-RTN.
       *エラー項目の中身確認 
-      *    DISPLAY JF020-ERR-KBN OF OTF-REC().
+      *    DISPLAY JF020-ERR-KBN OF OTF-REC(6).
            WRITE OTF-REC.
            ADD 1 TO OTF-CNT.
            EXIT.
