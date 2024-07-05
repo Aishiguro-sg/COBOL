@@ -32,6 +32,10 @@
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
        COPY KCBS010P.
+       01  DATA-CNT PIC 9 VALUE ZERO.
+      *型確認の変数
+      *01  INT-CHECK-CNT PIC 9 VALUE 1.
+
       ********************************************************
        PROCEDURE DIVISION.
       *サブルーチン呼び出し
@@ -90,22 +94,31 @@
            ADD 1 TO OTF-CNT.
            EXIT.
       *------------------------------------------------------
-      *データ区分 9
+      *データ区分 1|9
        JF020-DATA-KBN-RTN SECTION.
-           IF JF020-DATA-KBN OF ITF-REC IS NUMERIC THEN
+           MOVE FUNCTION NUMVAL(JF020-DATA-KBN OF ITF-REC) TO DATA-CNT.
+      *英数字型を数字型に変換
+      *    IF INT-CHECK-CNT = DATA-CNT THEN
+      *       DISPLAY DATA-CNT
+      *    ELSE
+      *       DISPLAY "X"
+      *    END-IF
+          IF (DATA-CNT IS NUMERIC) AND 
+              ((DATA-CNT = 1) OR (DATA-CNT = 9)) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(1)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(1)
            END-IF
            EXIT.
       *------------------------------------------------------
       *受注番号 9 & x:ZERO
        JF020-JUCHU-NO-X-RTN SECTION.
+           MOVE FUNCTION NUMVAL(JF020-JUCHU-NO OF ITF-REC) TO DATA-CNT.
            IF (JF020-JUCHU-NO OF ITF-REC IS NUMERIC) AND 
               (JF020-JUCHU-NO OF ITF-REC NOT = 0) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(2)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(2)
            END-IF
            EXIT.
       *------------------------------------------------------
@@ -117,36 +130,38 @@
            CALL "KCBS010" USING KCBS010-P1.
       *ここ確認
            IF S010-RCD = "E" THEN
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(3)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(3)
            END-IF
            EXIT.
       *------------------------------------------------------
-      *得意先コード 9 & x:SPACE
+      *得意先コード x:SPACE
        JF020-TOKU-COD-RTN SECTION.
-           IF (JF020-TOKU-COD OF ITF-REC IS NUMERIC) AND
-              (JF020-TOKU-COD OF ITF-REC = SPACE) THEN
+           IF (JF020-TOKU-COD OF ITF-REC = SPACE) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(4)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(4)
            END-IF
            EXIT.
       *------------------------------------------------------
       *商品番号 9 & x:ZERO
        JF020-SHOHIN-NO-RTN SECTION.
+           MOVE FUNCTION NUMVAL(JF020-SHOHIN-NO OF ITF-REC) TO DATA-CNT.
            IF (JF020-SHOHIN-NO OF ITF-REC IS NUMERIC) AND
               (JF020-SHOHIN-NO OF ITF-REC NOT = 0) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(5)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(5)
            END-IF
        EXIT.
       *------------------------------------------------------
       *数量 9 & 999
        JF020-SURYO-X-RTN SECTION.
+           MOVE FUNCTION NUMVAL(JF020-SURYO OF ITF-REC) TO DATA-CNT.
            IF (JF020-SURYO OF ITF-REC IS NUMERIC) AND
-              (JF020-SURYO OF ITF-REC <= 999) THEN
+              ((JF020-SURYO OF ITF-REC >= 1) AND
+              (JF020-SURYO OF ITF-REC <= 999)) THEN
               CONTINUE
            ELSE
-              MOVE 1 TO JF020-ERR-KBN OF OTF-REC(6)
+              MOVE "1" TO JF020-ERR-KBN OF OTF-REC(6)
            END-IF
        EXIT.
