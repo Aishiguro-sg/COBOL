@@ -136,7 +136,7 @@
       *------------------------------------------------------
       *ìæà”êÊÉRÅ[Éh x:SPACE
        JF020-TOKU-COD-RTN SECTION.
-           IF (JF020-TOKU-COD OF ITF-REC = SPACE) THEN
+           IF (JF020-TOKU-COD OF ITF-REC NOT = SPACE) THEN
               CONTINUE
            ELSE
               MOVE "1" TO JF020-ERR-KBN OF OTF-REC(4)
