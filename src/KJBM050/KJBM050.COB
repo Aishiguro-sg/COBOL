@@ -59,8 +59,8 @@
       *終了処理
        END-RTN SECTION.
            DISPLAY "入力数 ITF= " ITF-CNT.
-           DISPLAY "出力1数 OTF= " OTF-CNT1.
-           DISPLAY "出力2数 OTF= " OTF-CNT2.
+           DISPLAY "出力1数 OTF1= " OTF-CNT1.
+           DISPLAY "出力2数 OT2F= " OTF-CNT2.
            CLOSE ITF-FILE.
            CLOSE OTF-FILE1.
            CLOSE OTF-FILE2.
@@ -86,8 +86,6 @@
       *エラー項目の中身確認 
       *    DISPLAY JF020-ERR-KBN OF OTF-REC(6).
       *    WRITE OTF-REC1.
-           ADD 1 TO OTF-CNT1.
-           ADD 1 TO OTF-CNT2.
            EXIT.
       *------------------------------------------------------
       *データ区分 1|9
@@ -96,10 +94,12 @@
               DISPLAY "Not Error"
               MOVE ITF-REC TO OTF-REC1
               WRITE OTF-REC1
+              ADD 1 TO OTF-CNT1
            ELSE
               DISPLAY "Error"
               MOVE ITF-REC TO OTF-REC2
               WRITE OTF-REC2
+              ADD 1 TO OTF-CNT2 
            END-IF
            EXIT.
       
