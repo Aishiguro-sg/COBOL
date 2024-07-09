@@ -43,8 +43,10 @@
       *サブルーチン呼び出し
            DISPLAY "*** START ***".
            PERFORM INITIAL-RTN.
-           PERFORM INPUT-RTN UNTIL ITF-END-FLG = "E".
-      *    PERFORM OUTPUT-RTN
+           PERFORM UNTIL ITF-END-FLG = "E"
+           PERFORM INPUT-RTN
+           PERFORM OUTPUT-RTN
+           END-PERFORM.
            PERFORM END-RTN.
            DISPLAY "*** END ***".
            STOP RUN.
@@ -60,20 +62,20 @@
        END-RTN SECTION.
            DISPLAY "入力数 ITF= " ITF-CNT.
            DISPLAY "出力1数 OTF1= " OTF-CNT1.
-           DISPLAY "出力2数 OT2F= " OTF-CNT2.
+           DISPLAY "出力2数 OTF2= " OTF-CNT2.
            CLOSE ITF-FILE.
            CLOSE OTF-FILE1.
            CLOSE OTF-FILE2.
            EXIT.
       *------------------------------------------------------
-      *入力(+出力)
+      *入力
        INPUT-RTN SECTION.
            READ ITF-FILE
                AT END
                    MOVE "E" TO ITF-END-FLG
                NOT AT END
                    ADD 1 TO ITF-CNT
-                   PERFORM OUTPUT-RTN
+      *            PERFORM OUTPUT-RTN
            END-READ.
            EXIT.
          
@@ -83,12 +85,9 @@
            MOVE SPACE TO OTF-REC2.
       *エラー区分
            PERFORM JF020-DATA-KBN-RTN.
-      *エラー項目の中身確認 
-      *    DISPLAY JF020-ERR-KBN OF OTF-REC(6).
-      *    WRITE OTF-REC1.
            EXIT.
       *------------------------------------------------------
-      *データ区分 1|9
+      *エラー区分　SPACE|not
        JF020-DATA-KBN-RTN SECTION.
           IF JF020-ERR-KBN-TBL OF ITF-REC = SPACE THEN
               DISPLAY "Not Error"
