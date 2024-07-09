@@ -93,10 +93,12 @@
       *ÉfÅ[É^ãÊï™ 1|9
        JF020-DATA-KBN-RTN SECTION.
           IF JF020-ERR-KBN-TBL OF ITF-REC = SPACE THEN
-              DISPLAY "Error"
+              DISPLAY "Not Error"
+              MOVE ITF-REC TO OTF-REC1
               WRITE OTF-REC1
            ELSE
-              DISPLAY "else"
+              DISPLAY "Error"
+              MOVE ITF-REC TO OTF-REC2
               WRITE OTF-REC2
            END-IF
            EXIT.
