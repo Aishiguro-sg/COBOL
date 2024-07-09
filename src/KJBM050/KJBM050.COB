@@ -43,9 +43,10 @@
       *サブルーチン呼び出し
            DISPLAY "*** START ***".
            PERFORM INITIAL-RTN.
+           PERFORM INPUT-RTN.
            PERFORM UNTIL ITF-END-FLG = "E"
-           PERFORM INPUT-RTN
-           PERFORM OUTPUT-RTN
+               PERFORM OUTPUT-RTN
+               PERFORM INPUT-RTN
            END-PERFORM.
            PERFORM END-RTN.
            DISPLAY "*** END ***".
