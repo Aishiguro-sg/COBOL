@@ -27,11 +27,22 @@
        01  OTF-REC.
            COPY KUCF020.
 
+       01 SAVE.
+           03 SAVE-TOKU-COD PIC X(4) VALUE SPACE.
+           03 SAVE-JUCHU-DATE.
+              05 SAVE-JUCHU-YY PIC 9(4) VALUE ZERO.
+              05 SAVE-JUCHU-MM PIC 9(2) VALUE ZERO.
+              05 SAVE-JUCHU-MM PIC 9(2) VALUE ZERO.
+
+           03 SAVE-KINGAKU PIC S9P(9) VALUE ZERO.
+
+
       *変数定義　入出力カウント　入力停止の条件式用
        WORKING-STORAGE SECTION.
        01  ITF-CNT PIC 9 VALUE ZERO.
        01  OTF-CNT PIC 9 VALUE ZERO.
        01  ITF-END-FLG PIC X VALUE SPACE.
+       01  DATA-CNT PIC 9 VALUE ZERO.
 
       ********************************************************
        PROCEDURE DIVISION.
@@ -68,7 +79,6 @@
                    MOVE "E" TO ITF-END-FLG
                NOT AT END
                    ADD 1 TO ITF-CNT
-      *            PERFORM OUTPUT-RTN
            END-READ.
            EXIT.
          
@@ -80,12 +90,41 @@
            ADD 1 TO OTF-CNT.
            EXIT.
       *------------------------------------------------------
-      *エラー区分　SPACE|not
+      *集計処理　得意先コード(=) 受注年月(=) ITF-END-FLG(E)
        SAM-RTN SECTION.
-          IF ITF-REC = SPACE THEN
-              DISPLAY "同じ"
+           IF (SAVE-TOKU-COD = UF010-TOKU-COD) AND 
+              (SAVE-JUCHU-DATE = UF010-JUCHU-DATE) AND 
+              (ITF-END-FLG = "E") THEN
+              PERFORM DATA-RTN
            ELSE
-              DISPLAY "異なる"
-           END-IF
+      *得意先コード　　　　ITF　　　 →　　　保存　　　　　　　　
+              MOVE UF010-TOKU-COD TO SAVE-TOKU-COD
+      *金額集計　　保存:合計金額　 →　　　OTF
+              MOVE SAVE-KINGAKU TO UF020-KINGAKU
+              WRITE OTF-REC
+              PERFORM SPACE-RTN
+           END-IF.
            EXIT.
-      
+
+      *データ区分処理 
+       DATA-RTN SECTION.
+           MOVE FUNCTION NUMVAL(UF010-DATA-KBN) TO DATA-CNT.
+      *(+)
+           IF (DATA-CNT IS NUMERIC) AND 
+              (DATA-CNT = 1) THEN
+              ADD UF010-KINGAKU TO SAVE-KINGAKU
+      *(-)
+           ELSE IF (DATA-CNT IS NUMERIC) AND 
+                   (DATA-CNT = 9) THEN
+              SUBTRACT UF010-KINGAKU FROM SAVE-KINGAKU
+           END-IF.
+           EXIT.
+
+      *スペース処理
+       SPACE-RTN SECTION.
+      *(0 → 金額)
+           MOVE 0 TO SAVE-KINGAKU.
+      *次の集計キーを設定
+           MOVE UF010-TOKU-COD TO SAVE-KINGAKU.
+           MOVE UF010-JUCHU-DATE TO SAVE-KINGAKU.
+           EXIT.
