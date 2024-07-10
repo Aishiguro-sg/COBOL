@@ -32,9 +32,9 @@
            03 SAVE-JUCHU-DATE.
               05 SAVE-JUCHU-YY PIC 9(4) VALUE ZERO.
               05 SAVE-JUCHU-MM PIC 9(2) VALUE ZERO.
-              05 SAVE-JUCHU-MM PIC 9(2) VALUE ZERO.
+              05 SAVE-JUCHU-DD PIC 9(2) VALUE ZERO.
 
-           03 SAVE-KINGAKU PIC S9P(9) VALUE ZERO.
+           03 SAVE-KINGAKU PIC S9(9) PACKED-DECIMAL.
 
 
       *変数定義　入出力カウント　入力停止の条件式用
@@ -108,15 +108,27 @@
 
       *データ区分処理 
        DATA-RTN SECTION.
+           DISPLAY "------ "
+           DISPLAY "SAVE-TOKU-COD: " SAVE-TOKU-COD
+           DISPLAY "UF010-TOKU-COD: " UF010-TOKU-COD
+           DISPLAY "SAVE-JUCHU-DATE: " SAVE-JUCHU-DATE
+           DISPLAY "UF010-JUCHU-DATE: " UF010-JUCHU-DATE
+           DISPLAY "ITF-END-FLG: " ITF-END-FLG
            MOVE FUNCTION NUMVAL(UF010-DATA-KBN) TO DATA-CNT.
       *(+)
            IF (DATA-CNT IS NUMERIC) AND 
               (DATA-CNT = 1) THEN
+      *                ITF             SAVE
               ADD UF010-KINGAKU TO SAVE-KINGAKU
+              DISPLAY UF010-KINGAKU
+              DISPLAY SAVE-KINGAKU
       *(-)
            ELSE IF (DATA-CNT IS NUMERIC) AND 
                    (DATA-CNT = 9) THEN
+      *                     ITF             SAVE
               SUBTRACT UF010-KINGAKU FROM SAVE-KINGAKU
+              DISPLAY UF010-KINGAKU
+              DISPLAY SAVE-KINGAKU
            END-IF.
            EXIT.
 
@@ -125,6 +137,6 @@
       *(0 → 金額)
            MOVE 0 TO SAVE-KINGAKU.
       *次の集計キーを設定
-           MOVE UF010-TOKU-COD TO SAVE-KINGAKU.
-           MOVE UF010-JUCHU-DATE TO SAVE-KINGAKU.
+           MOVE UF010-TOKU-COD TO SAVE-TOKU-COD.
+           MOVE UF010-JUCHU-DATE TO SAVE-JUCHU-DATE.
            EXIT.
