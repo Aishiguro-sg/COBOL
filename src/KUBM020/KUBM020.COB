@@ -27,6 +27,12 @@
        01  OTF-REC.
            COPY KUCF020.
 
+      *変数定義　入出力カウント　入力停止の条件式用
+       WORKING-STORAGE SECTION.
+       01  ITF-CNT PIC 9 VALUE ZERO.
+       01  OTF-CNT PIC 9 VALUE ZERO.
+       01  ITF-END-FLG PIC X VALUE SPACE.
+
        01 SAVE.
            03 SAVE-TOKU-COD PIC X(4) VALUE SPACE.
            03 SAVE-JUCHU-DATE.
@@ -34,13 +40,6 @@
               05 SAVE-JUCHU-MM PIC 9(2) VALUE ZERO.
               05 SAVE-JUCHU-DD PIC 9(2) VALUE ZERO.
            03 SAVE-KINGAKU PIC S9(9) PACKED-DECIMAL.
-
-
-      *変数定義　入出力カウント　入力停止の条件式用
-       WORKING-STORAGE SECTION.
-       01  ITF-CNT PIC 9 VALUE ZERO.
-       01  OTF-CNT PIC 9 VALUE ZERO.
-       01  ITF-END-FLG PIC X VALUE SPACE.
 
       ********************************************************
        PROCEDURE DIVISION.
@@ -90,15 +89,19 @@
       *集計処理　得意先コード(=) 受注年月(=) ITF-END-FLG(E)
        SAM-RTN SECTION.
       *全ての保存先には値が入っていない
+           DISPLAY "010 $ " UF010-KINGAKU "|Keep $ " SAVE-KINGAKU.
+           DISPLAY "Total $ " UF020-KINGAKU.
+      *    DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD.
+      *    DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE.
            DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD.
-           DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE.
+      *    DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE.
            IF (UF010-TOKU-COD = SAVE-TOKU-COD) AND 
-              (UF010-JUCHU-DATE = SAVE-JUCHU-DATE) AND 
-              (ITF-END-FLG = "E") THEN
+              (UF010-JUCHU-DATE = SAVE-JUCHU-DATE) THEN
+      *       (ITF-END-FLG = "E") THEN
+              DISPLAY UF010-DATA-KBN
+              DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD
+              DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE
               PERFORM DATA-RTN
-      *       DISPLAY UF010-DATA-KBN
-      *       DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD
-      *       DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE
            ELSE
       *       DISPLAY UF010-DATA-KBN
       *       DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD
@@ -111,11 +114,11 @@
       *       DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE      
       *金額集計　　保存:合計金額　 →　　　OTF
               MOVE SAVE-KINGAKU TO UF020-KINGAKU
-      *       DISPLAY SAVE-KINGAKU
+              DISPLAY "Sam " UF020-KINGAKU
               WRITE OTF-REC
               PERFORM SPACE-RTN
-              DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD
-              DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE
+      *       DISPLAY UF010-TOKU-COD "|" SAVE-TOKU-COD
+      *       DISPLAY UF010-JUCHU-DATE "|" SAVE-JUCHU-DATE
               DISPLAY "--------------"
            END-IF.
            EXIT.
@@ -126,12 +129,12 @@
            IF ( UF010-DATA-KBN  = "1") THEN
       *                ITF             SAVE
               ADD UF010-KINGAKU TO SAVE-KINGAKU
-      *       DISPLAY UF010-KINGAKU "|" SAVE-KINGAKU
+              DISPLAY UF010-KINGAKU "|" SAVE-KINGAKU
       *(-)
            ELSE IF ( UF010-DATA-KBN  = "9") THEN
       *                     ITF             SAVE
               SUBTRACT UF010-KINGAKU FROM SAVE-KINGAKU
-      *       DISPLAY UF010-KINGAKU "|" SAVE-KINGAKU
+              DISPLAY UF010-KINGAKU "|" SAVE-KINGAKU
            END-IF.
            DISPLAY "--------------"
            EXIT.
