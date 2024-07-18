@@ -93,7 +93,7 @@
              MOVE  HIGH-VALUE  TO  IMF-KEY
            NOT  AT  END
              ADD  1  TO  IMF-CNT
-             MOVE  CFSHO-SHOHIN-NO  TO  WK-MLD-SHOHIN-NO
+             MOVE  CFSHO-SHOHIN-NO  TO  WK-IMF-SHOHIN-NO
            END-READ.
        EXT.
            EXIT.
@@ -114,6 +114,7 @@
            CLOSE  OTF-FILE.
            CLOSE  ITF-FILE.
            CLOSE  IMF-FILE.
+           DISPLAY "ITF:"ITF-CNT " | IMF:" IMF-CNT " | OTF:" OTF-CNT.
            DISPLAY  "*** END ***".
        EXT.
            EXIT.
@@ -126,6 +127,7 @@
       *
            MOVE  ITF-KEY      TO  ILD-KEY.
            MOVE  IMF-KEY      TO  MLD-KEY.
+           DISPLAY "I:"ITF-KEY " | M:" IMF-KEY.
       *
            PERFORM  
              UNTIL (ITF-KEY NOT = ILD-KEY) OR (IMF-KEY NOT = MLD-KEY)
