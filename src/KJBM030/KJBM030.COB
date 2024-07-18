@@ -80,7 +80,7 @@
              MOVE  HIGH-VALUE  TO  ITF-KEY
            NOT  AT  END
              ADD  1  TO  ITF-CNT
-             MOVE JF020-SHOHIN-NO OF ITF-REC TO  WK-ITF-SHOHIN-NO
+             MOVE JF020-SHOHIN-NO OF ITF-REC TO ITF-KEY
            END-READ.
        EXT.
            EXIT.
@@ -93,7 +93,7 @@
              MOVE  HIGH-VALUE  TO  IMF-KEY
            NOT  AT  END
              ADD  1  TO  IMF-CNT
-             MOVE  CFSHO-SHOHIN-NO  TO  WK-IMF-SHOHIN-NO
+             MOVE  CFSHO-SHOHIN-NO TO IMF-KEY
            END-READ.
        EXT.
            EXIT.
@@ -105,6 +105,7 @@
            PERFORM SHOHINBANGOU-RTN.
            ADD  1  TO  OTF-CNT.
            WRITE  OTF-REC.
+           DISPLAY "            OTF :"OTF-REC.
        EXT.
            EXIT.
       ********************************************************
