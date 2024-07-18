@@ -34,13 +34,9 @@
       *---------------
        01  ITF-KEY.
          02  WK-ITF-SHOHIN-NO     PIC   X(5)          VALUE  LOW-VALUE.
-       01  ILD-KEY.
-         02  WK-ILD-SHOHIN-NO     PIC   X(5)          VALUE  LOW-VALUE.
       *---------------
        01  IMF-KEY.
          02  WK-IMF-SHOHIN-NO     PIC   X(5)          VALUE  LOW-VALUE.
-       01  MLD-KEY.
-         02  WK-MLD-SHOHIN-NO     PIC   X(5)          VALUE  LOW-VALUE.
       *
       ********************************************************
       * “üj+io
@@ -80,7 +76,7 @@
              MOVE  HIGH-VALUE  TO  ITF-KEY
            NOT  AT  END
              ADD  1  TO  ITF-CNT
-             MOVE JF020-SHOHIN-NO OF ITF-REC TO ITF-KEY
+             MOVE JF020-SHOHIN-NO OF ITF-REC TO WK-ITF-SHOHIN-NO
            END-READ.
        EXT.
            EXIT.
@@ -93,7 +89,7 @@
              MOVE  HIGH-VALUE  TO  IMF-KEY
            NOT  AT  END
              ADD  1  TO  IMF-CNT
-             MOVE  CFSHO-SHOHIN-NO TO IMF-KEY
+             MOVE  CFSHO-SHOHIN-NO TO WK-IMF-SHOHIN-NO
            END-READ.
        EXT.
            EXIT.
@@ -125,21 +121,17 @@
        SHOHINBANGOU-RTN                SECTION.
            MOVE  SPACE  TO  OTF-REC.
       *
-           MOVE  ITF-KEY      TO  ILD-KEY.
-           MOVE  IMF-KEY      TO  MLD-KEY.
-           DISPLAY "I:"ITF-KEY " | M:" IMF-KEY.
-      *
-           PERFORM  
-             UNTIL (ITF-KEY NOT = ILD-KEY) OR (IMF-KEY NOT = MLD-KEY)
-             PERFORM  MATCHING-RTN
-             PERFORM  READ-I-RTN
-           END-PERFORM.
+           PERFORM  MATCHING-RTN.
        EXT.
            EXIT.
       ********************************************************
       * ”äŠr ˆ—
       ********************************************************
        HIKAKU-RTN                   SECTION.
+           IF ITF-KEY > IMF-KEY THEN
+             PERFORM  READ-M-RTN UNTIL ITF-KEY <= IMF-KEY
+           END-IF.
+           DISPLAY "I:"ITF-KEY " | M:" IMF-KEY.
            IF  ITF-KEY = IMF-KEY THEN
              MOVE CFSHO-SHOHIN-NO TO JF020-SHOHIN-NO OF OTF-REC
              MOVE CFSHO-TANKA TO JF020-TANKA OF OTF-REC
@@ -149,8 +141,6 @@
              ELSE MOVE 0 TO JF020-KINGAKU OF OTF-REC
            ELSE IF ITF-KEY < IMF-KEY THEN
              MOVE "2" TO JF020-ERR-KBN OF OTF-REC(5)
-           ELSE IF ITF-KEY > IMF-KEY THEN
-             PERFORM  READ-M-RTN
            END-IF.
        EXT.
            EXIT.
