@@ -139,9 +139,10 @@
       ********************************************************
        HIKAKU-RTN                   SECTION.
            IF  ITF-KEY = IMF-KEY THEN
-             CONTINUE
+             MOVE CFSHO-SHOHIN-NO TO JF020-SHOHIN-NO OF OTF-REC
+             MOVE CFSHO-TANKA TO JF020-TANKA OF OTF-REC
            ELSE IF ITF-KEY < IMF-KEY THEN
-             CONTINUE
+             MOVE "2" TO JF020-ERR-KBN OF OTF-REC(5)
            ELSE IF ITF-KEY > IMF-KEY THEN
              PERFORM  READ-M-RTN
            END-IF.
