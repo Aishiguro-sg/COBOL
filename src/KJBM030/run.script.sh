@@ -1,6 +1,6 @@
 #!/bin/bash
-export ITF="KUBM020_testdata.dat"
+export ITF="../../data/KJBM030IM.txt"
 # export ITF="../../data/KUBM020I.txt"
-export OTF="OTFsum.txt"
+export OTF="OTFmatch.txt"
 # 実行
-./KUBM030
+./KJBM030

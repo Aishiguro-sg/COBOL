@@ -82,12 +82,12 @@
            MOVE  UF010-JUCHU-MM  TO  UF020-JUCHU-MM.
            MOVE       0         TO  KINGAKU.
            MOVE  ITF-KEY      TO  OLD-KEY.
-      *
+      *ì¸óÕèàóù
            PERFORM  UNTIL  ITF-KEY  NOT  =  OLD-KEY
              PERFORM  COMP-RTN
              PERFORM  READ-RTN
            END-PERFORM.
-      *
+      *èoóÕèàóù
            PERFORM  WRITE-RTN.
        EXT.
            EXIT.

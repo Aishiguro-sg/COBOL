@@ -6,7 +6,7 @@ BINDIR="${SCRIPTDIR}"
 COPYLIBDIR="${SCRIPTDIR}/../../copylib"
 DIRNAME=$(basename "${SCRIPTDIR}")
 
-SRCFILE="KJBM020.COB"
+SRCFILE="KJBM030.COB"
 # -oつけてるときは.SO
 SRCFILENAME=$(basename -s .COB $SRCFILE)
 cobc -x -o "${SRCFILENAME}" -I"${COPYLIBDIR}" "${SRCFILE}"
