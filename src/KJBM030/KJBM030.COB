@@ -152,13 +152,11 @@
       ********************************************************
        MATCHING-RTN                   SECTION.
            IF  JF020-ERR-KBN OF ITF-REC(5)  =  SPACE THEN
+             MOVE ITF-REC TO OTF-REC
              PERFORM  HIKAKU-RTN
            ELSE
-             MOVE CFSHO-SHOHIN-MEI OF IMF-REC 
-               TO JF020-SHOHIN-MEI OF OTF-REC
              MOVE ITF-REC TO OTF-REC
-             DISPLAY "Error(5)--->" OTF-REC
-             PERFORM  HIKAKU-RTN
+             DISPLAY "Error(5)--->" JF020-SHOHIN-MEI OF OTF-REC
            END-IF.
        EXT.
            EXIT.
