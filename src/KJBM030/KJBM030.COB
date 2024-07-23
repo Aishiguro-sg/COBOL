@@ -63,6 +63,7 @@
       *編集
       ********************************************************
        EDIT-RTN                   SECTION.
+           PERFORM  SHOHINBANGOU-RTN.
            PERFORM  WRITE-RTN.
            PERFORM  READ-I-RTN.
        EXT.
@@ -97,7 +98,6 @@
       * 出力処理
       ********************************************************
        WRITE-RTN                  SECTION.
-           PERFORM SHOHINBANGOU-RTN.
            ADD  1  TO  OTF-CNT.
            WRITE  OTF-REC.
            DISPLAY "            OTF :"OTF-REC.
@@ -115,13 +115,18 @@
        EXT.
            EXIT.
       ********************************************************
-      ********************************************************
       * 商品番号 マッチング 処理
       ********************************************************
        SHOHINBANGOU-RTN                SECTION.
            MOVE  SPACE  TO  OTF-REC.
       *
-           PERFORM  MATCHING-RTN.
+           IF  JF020-ERR-KBN OF ITF-REC(5)  =  SPACE THEN
+             MOVE ITF-REC TO OTF-REC
+             PERFORM  HIKAKU-RTN
+           ELSE
+             MOVE ITF-REC TO OTF-REC
+             DISPLAY "Error(5)--->" JF020-SHOHIN-MEI OF OTF-REC
+           END-IF.
        EXT.
            EXIT.
       ********************************************************
@@ -132,6 +137,7 @@
              PERFORM  READ-M-RTN UNTIL ITF-KEY <= IMF-KEY
            END-IF.
            DISPLAY "I:"ITF-KEY " | M:" IMF-KEY.
+
            IF  ITF-KEY = IMF-KEY THEN
              MOVE CFSHO-SHOHIN-MEI TO JF020-SHOHIN-MEI OF OTF-REC
              MOVE CFSHO-TANKA TO JF020-TANKA OF OTF-REC
@@ -140,23 +146,12 @@
              IF JF020-ERR-KBN OF ITF-REC(6) = SPACE THEN
                COMPUTE JF020-KINGAKU OF OTF-REC 
                = JF020-SURYO OF ITF-REC * CFSHO-TANKA
-             ELSE MOVE 0 TO JF020-KINGAKU OF OTF-REC
+             ELSE
+               MOVE 0 TO JF020-KINGAKU OF OTF-REC
              END-IF
+
            ELSE IF ITF-KEY < IMF-KEY THEN
              MOVE "2" TO JF020-ERR-KBN OF OTF-REC(5)
-           END-IF.
-       EXT.
-           EXIT.
-      ********************************************************
-      * マッチング 処理
-      ********************************************************
-       MATCHING-RTN                   SECTION.
-           IF  JF020-ERR-KBN OF ITF-REC(5)  =  SPACE THEN
-             MOVE ITF-REC TO OTF-REC
-             PERFORM  HIKAKU-RTN
-           ELSE
-             MOVE ITF-REC TO OTF-REC
-             DISPLAY "Error(5)--->" JF020-SHOHIN-MEI OF OTF-REC
            END-IF.
        EXT.
            EXIT.
