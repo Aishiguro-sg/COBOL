@@ -135,11 +135,13 @@
            IF  ITF-KEY = IMF-KEY THEN
              MOVE CFSHO-SHOHIN-MEI TO JF020-SHOHIN-MEI OF OTF-REC
              MOVE CFSHO-TANKA TO JF020-TANKA OF OTF-REC
-      *    DISPLAY JF020-SHOHIN-NO OF OTF-REC "|" JF020-TANKA OF OTF-REC
+             DISPLAY JF020-SHOHIN-MEI OF OTF-REC 
+      *      DISPLAY JF020-TANKA OF OTF-REC
              IF JF020-ERR-KBN OF ITF-REC(6) = SPACE THEN
                COMPUTE JF020-KINGAKU OF OTF-REC 
                = JF020-SURYO OF ITF-REC * CFSHO-TANKA
              ELSE MOVE 0 TO JF020-KINGAKU OF OTF-REC
+             END-IF
            ELSE IF ITF-KEY < IMF-KEY THEN
              MOVE "2" TO JF020-ERR-KBN OF OTF-REC(5)
            END-IF.
@@ -150,6 +152,12 @@
       ********************************************************
        MATCHING-RTN                   SECTION.
            IF  JF020-ERR-KBN OF ITF-REC(5)  =  SPACE THEN
+             PERFORM  HIKAKU-RTN
+           ELSE
+             MOVE CFSHO-SHOHIN-MEI OF IMF-REC 
+               TO JF020-SHOHIN-MEI OF OTF-REC
+             MOVE ITF-REC TO OTF-REC
+             DISPLAY "Error(5)--->" OTF-REC
              PERFORM  HIKAKU-RTN
            END-IF.
        EXT.

@@ -2,10 +2,11 @@
 set -euo pipefail
 
 SCRIPTDIR=$(cd $(dirname $0); pwd)
-PROGRAMNAME="transtype.COB"
 BINDIR="${SCRIPTDIR}"
 COPYLIBDIR="${SCRIPTDIR}/../../copylib"
 DIRNAME=$(basename "${SCRIPTDIR}")
-BINNAME=$(basename -s .COB $PROGRAMNAME)
 
-cobc -x -o "${BINDIR}/${BINNAME}" -I"${COPYLIBDIR}" "${PROGRAMNAME}"
+SRCFILE="KJBM030.COB"
+# -oつけてるときは.SO
+SRCFILENAME=$(basename -s .COB $SRCFILE)
+cobc -x -o "${SRCFILENAME}" -I"${COPYLIBDIR}" "${SRCFILE}"
